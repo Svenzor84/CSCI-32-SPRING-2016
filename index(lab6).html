@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<!--
+ - Name        : index.html
+ - Author      : Steve Ross-Byers
+ - Description : Form for creating a template website (html) via php
+ -->
+
+<html lang="en-us">
+
+<head>
+    <title> Website Template Form </title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Steve Ross-Byers" />
+    <meta name="description" content="Form for creating template websites" />
+    <meta name="keyword" content="template, html, php, boostrap" />
+
+    <!-- Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Website Template Form</h1>
+            <p class="lead">This form will help you make a neat template to start off a website!</p>
+            <form class="form-horizontal" method="post" action="generate.php" id="regForm">
+                <div class="form-group">
+                    <label for="filename" class="col-md-3 control-label">Filename</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="filename" name="filename" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="author" class="col-md-3 control-label">Author's Name</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="author" name="author" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lang" class="col-md-3 control-label">Language</label>
+                    <div class="col-md-5">
+                        <select id="lang" name="lang">
+                            <option>en-us</option>
+                            <option>ga</option>
+                            <option>eo</option>
+                            <option>fr</option>
+                            <option>it</option>
+                            <option>ja</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="descrip" class="col-md-3 control-label">Website Description</label>
+                    <div class="col-md-5">
+                        <textarea class="form-control" id="descrip" name="descrip"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="url" class="col-md-3 control-label">CSS StyleSheet URL</label>
+                    <div class="col-md-5">
+                        <input type="url" class="form-control" id="url" name="url">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="heading" class="col-md-3 control-label">Main Heading Text</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="heading" name="heading" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="title" class="col-md-3 control-label">Website Title</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="title" name="title" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="list1" class="col-md-3 control-label">First List Item</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="list1" name="list1"  >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="list2" class="col-md-3 control-label">Second List Item</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="list2" name="list2"  >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="list3" class="col-md-3 control-label">Third List Item</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="list3" name="list3"  >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="copy" class="col-md-3 control-label">Copyright Name</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" id="copy" name="copy"  >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-6">
+                        <div class="button">
+                            <input type="submit" class="btn btn-lg btn-success" >
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JQuery and BootStrap libraries -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</body>
+
+</html>

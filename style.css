@@ -1,0 +1,32 @@
+h2, h3{
+    
+    text-align: center;
+    border-bottom: solid 2px #000000;
+}
+
+.heading {
+    
+    text-align: center;
+    background-color: #CECECE;
+    margin: 0 auto 0;
+    padding: 0.3em;
+    
+}
+
+p, input, .form-group {
+    
+    text-align: center;
+    
+}
+
+form {
+    
+    padding: 0.5em;
+    
+}
+
+li {
+    
+    font-weight: bolder;
+    
+}
