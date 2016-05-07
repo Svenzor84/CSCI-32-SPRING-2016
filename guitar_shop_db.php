@@ -20,7 +20,8 @@ class GuitarShop {
     private $num_rows;
     
     // Class Constants
-    const DSN = 'mysql:host=localhost;dbname=guitar_shop';
+    //added the charset attribute to ensure that the customer search function works properly
+    const DSN = 'mysql:host=localhost;dbname=guitar_shop;charset=utf8';
     const UN = 'root';
     const PW = '';
     
@@ -87,7 +88,7 @@ class GuitarShop {
      * ]
      * Uses the class variable $sql ($this->sql) to run the query
      */
-    private function RunAdvancedQuery($named_parameter_array) {
+    private function RunAdvancedQuery($named_parameter_array, $insert = false) {
        // Prepare the Query
        $this->stmt = $this->db->prepare($this->sql);
     
@@ -97,9 +98,14 @@ class GuitarShop {
        // Store the Number Of Rows Returned
        $this->num_rows = $this->stmt->rowCount();
         
-       // Work with the results (as an array of objects)
-       $this->rs = $this->stmt->fetchAll();
+       //if we are not inserting or updating the database
+       if($insert == false) {
         
+        // Work with the results (as an array of objects)
+        $this->rs = $this->stmt->fetchAll();
+        
+       }
+       
        // Free the statement
        $this->stmt->closeCursor(); 
     }
@@ -134,32 +140,52 @@ class GuitarShop {
      * And: http://php.net/manual/en/function.array-keys.php
      * @return - An HTML Table as a string
      */
-    public function ViewResultsAsTable() {
+    public function ViewResultsAsTable($crud = false) {
         
         //get an array containing the keys from the first object of the result set (turned into an array)
         $keys = array_keys(get_object_vars($this->rs[0]));
         
         //set up the table
-        $string = "<table>";
+        $string = "<table class='table table-striped'>";
         
         //loop through the keys array to set up the column headings for the table
         foreach($keys as $head) {
             
             //insert the heading
-            $string .= "<td>$head</td>";
+            $string .= "<td class='heading'>$head</td>";
+        }
+        
+        //if we are outputting the table for use in the crud interface
+        if ($crud == true) {
+            
+            //add in the column headings for the update and delete columns
+            $string .= "<td class='heading'>Modify</td>";
+            $string .= "<td class='heading'>Remove</td>";
         }
         
         //loop through the result set array of objects
         foreach($this->rs as $row) {
             
+            //save the object members into an array
+            $vars = get_object_vars($row);
+            
             //set up a row
             $string .= "<tr>";
             
             //loop through each object, as an array
-            foreach (get_object_vars($row) as $item) {
+            foreach ($vars as $item) {
                 
                 //output the cell value into the table
                 $string .= "<td>" . $item . "</td>";
+            }
+            
+            //if we are outputting this table for use in the crud interface
+            if ($crud == true) {
+                
+                //add in the update and delete columns at the end of the row
+                $string .= "<td><a href='guitar_shop_crud.php/?action=Updating&cust=$vars[customerID]' class='btn btn-primary'>Update</a></td>";
+                $string .= "<td><a href='guitar_shop_crud.php/?action=Deleting&cust=$vars[customerID]' class='btn btn-danger'>Delete</a></td>";
+                
             }
             
             //close the row
@@ -271,6 +297,110 @@ class GuitarShop {
     }
     
 /** END Product Methods - Queries on the Products table */  
+/** Customer Methods - Queries on the Customers table */
 
+/*
+     * Gets a single customer based on customerID
+     * @param $customer_id - The customerID to limit the query
+     */
+    public function GetCustomer($customer_id) {
+
+        //set up the query
+        $this->sql = "SELECT *
+                      FROM customers
+                      WHERE customerID = :customer_id";
+                      
+        //execute the query
+        $this->RunAdvancedQuery([
+            ':customer_id' => $customer_id,
+            ]);
+    }
     
+    /*
+     * Gets ALL customer data
+     */
+    public function GetCustomers() {
+        
+        //set up the query
+        $this->sql = "SELECT *
+                      FROM customers";
+                      
+        //execute the query
+        $this->RunBasicQuery();
+    }
+    
+    /*
+     * Adds a customer to the table
+     */
+     public function AddCustomer($email_address, $password, $first_name, $last_name) {
+         
+         //set up the query
+         $this->sql = "INSERT INTO customers (emailAddress, password, firstName, lastName)
+                       VALUES (:email_address, :password, :first_name, :last_name)";
+                       
+        //execute the query
+        $this->RunAdvancedQuery([
+            ':email_address' => $email_address,
+            ':password'      => $password,
+            ':first_name'    => $first_name,
+            ':last_name'     => $last_name,
+            ], true);
+     }
+     
+     /*
+      * Removes a customer from the table
+      */
+    public function DeleteCustomer($customer_id) {
+        
+        //set up the query
+        $this->sql = "DELETE FROM customers
+                      WHERE customerID = :customer_id";
+                      
+        //execute the query
+        $this->RunAdvancedQuery([
+            ':customer_id' => $customer_id,
+            ], true);
+    }
+    
+    /*
+     * Updates a single field in the customer table
+     */
+     public function UpdateCustomer($customer_id, $column, $value) {
+         
+         //set up the query
+         $this->sql = "UPDATE customers
+                       SET $column = :value
+                       WHERE customerID = :customer_id";
+                       
+        //execute the query
+        $this->RunAdvancedQuery([
+            ':customer_id' => $customer_id,
+            ':value'       => $value,
+            ], true);
+     }
+     
+     /*
+      * Searches the Customers table for rows that match first and/or last name to the provided search query
+      */
+      public function SearchCustomer($string) {
+          
+        //replace troublesome special characters with escaped versions to make them searchable
+        $characters = array('/\\\/', '/\*/', '/\?/', '/\^/', '/\./', '/\+/', '/\$/', '/\|/', '/\(/', '/\)/', '/\[/', '/\]/', '/\{/', '/\}/', '/\,/');
+        $replacements = array('\\\\\\', '\*', '\?', '\^', '\.',  '\+', '\$', '\|',  '\(', '\)', '\[', '\]', '\{', '\}', '\,',);
+        $string = preg_replace($characters, $replacements, $string);
+        
+        //modify the search string for regex (replace all white space with | for use with RLIKE query)
+        $search = preg_replace('/\s+/','|', $string);
+          
+        //set up the query
+        $this->sql = "SELECT *
+                      FROM customers
+                      WHERE CONCAT_WS(' ', firstName, lastName) RLIKE :search";
+                        
+        //execute the query
+        $this->RunAdvancedQuery([
+            ':search' => $search,
+            ]);
+      }
+/** END Customer Methods - Queries on the Customers table */ 
 } // End GuitarShop class
